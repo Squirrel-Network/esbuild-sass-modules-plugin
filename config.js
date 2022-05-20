@@ -9,9 +9,8 @@ const config =
 		, omitSourceMapUrl: false
 		, outFile: undefined
 		, outputStyle: 'compressed'
-		, sourceMap: true
-		, sourceMapContents: false
-		, sourceMapEmbed: true
+		, sourceMap: false
+		, sourceMapEmbed: false
 		, sourceMapRoot: undefined
 		, functions: {}
 		, charset: true
@@ -20,7 +19,12 @@ const config =
 		, logger: sass.Logger.silent
 		}
 	, postcss:
-		{ use: true
+		{ use: false
+		, custom:
+			{ parser: undefined
+			, stringifier: undefined
+			, syntax: undefined
+			}
 		, autoprefixer:
 			{ use: true
 			}
