@@ -1,8 +1,8 @@
-import esb from 'esbuild';
 import sass from 'sass';
 import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
 import p from 'path';
+import _ from 'lodash/fp';
 
 import defaultConfig from '../config.js';
 
@@ -15,10 +15,7 @@ export default class ESBuildSASSModulesPlugin {
 	config;
 
 	constructor(pluginConfig) {
-		this.config =
-			{ ...defaultConfig
-			, ...pluginConfig
-			};
+		this.config = _(defaultConfig).merge(pluginConfig).valueOf();
 	}
 
 	mark({ path, kind, importer }) {
@@ -64,11 +61,14 @@ export default class ESBuildSASSModulesPlugin {
 					{ ...this.config.postcss.custom
 					, from: undefined
 					, to: undefined
-					, map:
-						{ inline: true
-						, sourcesContent: true
-						, prev: r.map.toString('utf8')
-						}
+					, map: (r.map
+						&& (
+							{ inline: true
+							, sourcesContent: true
+							, prev: r.map.toString('utf8')
+							}
+						// this config will not generate source files
+						) || false)
 					}
 				)
 			)
