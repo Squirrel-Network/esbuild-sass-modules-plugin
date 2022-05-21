@@ -20,6 +20,7 @@ const config =
 		}
 	, postcss:
 		{ use: false
+		, plugins: []
 		, custom:
 			{ parser: undefined
 			, stringifier: undefined

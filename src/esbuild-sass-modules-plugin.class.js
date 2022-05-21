@@ -55,7 +55,7 @@ export default class ESBuildSASSModulesPlugin {
 		const sass = this.compile(root, path);
 
 		if(this.config.postcss.use) {
-			return sass.then(r => postcss()
+			return sass.then(r => postcss(this.config.postcss.plugins)
 				.process(
 					r.css.toString('utf8'),
 					{ ...this.config.postcss.custom
