@@ -4,6 +4,6 @@
 - [ ] URL resolver
 - [x] PostCSS
 - [x] Configurable minify, SCSS compile options, PostCSS, ecc.
-- [x] Add tests
+- [x] Write tests
 - [ ] Dynamic imports
 - [ ] Write documentation
