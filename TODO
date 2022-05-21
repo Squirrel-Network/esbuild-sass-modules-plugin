@@ -2,6 +2,7 @@
 - [x] Inline resolver
 - [ ] File resolver
 - [ ] URL resolver
+- [ ] Custom resolvers
 - [x] PostCSS
 - [x] Configurable minify, SCSS compile options, PostCSS, ecc.
 - [x] Write tests
