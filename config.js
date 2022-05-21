@@ -20,13 +20,11 @@ const config =
 		}
 	, postcss:
 		{ use: false
+		, plugins: []
 		, custom:
 			{ parser: undefined
 			, stringifier: undefined
 			, syntax: undefined
-			}
-		, autoprefixer:
-			{ use: true
 			}
 		}
 	};

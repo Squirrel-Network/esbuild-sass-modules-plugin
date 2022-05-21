@@ -1,10 +1,9 @@
 - [x] Import statement
 - [ ] Inline resolver
+- [ ] File resolver
 - [ ] URL resolver
-- [ ] Bundle resolver
-- [ ] PostCSS
-- [ ] Autoprefix
-- [ ] Configurable minify, SCSS compile options, PostCSS, ecc.
+- [x] PostCSS
+- [x] Configurable minify, SCSS compile options, PostCSS, ecc.
 - [x] Add tests
 - [ ] Dynamic imports
 - [ ] Write documentation

@@ -27,7 +27,6 @@
   },
   "homepage": "https://github.com/Squirrel-Network/esbuild-sass-modules-plugin#readme",
   "devDependencies": {
-    "autoprefixer": "^10.4.7",
     "esbuild": "^0.14.39",
     "jest": "^28.1.0",
     "postcss": "^8.4.13",
