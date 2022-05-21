@@ -1,5 +1,6 @@
 - [x] Import statement
 - [ ] Inline resolver
+- [ ] File resolver
 - [ ] URL resolver
 - [x] PostCSS
 - [x] Configurable minify, SCSS compile options, PostCSS, ecc.
