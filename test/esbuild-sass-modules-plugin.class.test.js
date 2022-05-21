@@ -4,13 +4,17 @@ import fsp from 'fs/promises';
 import ESBuildSASSModulesPlugin
 	, { defaultConfig } from '../src/esbuild-sass-modules-plugin.class.js';
 import
-	{ PATH_SAMPLE_SIMPLE_SCSS
-	, PATH_SAMPLE_SIMPLE_JS
-	, PATH_SAMPLE_SIMPLE_SASS
-	, PATH_SAMPLE_SIMPLE_SCSS_COMPILED
-	, PATH_SAMPLE_SIMPLE_SASS_COMPILED
-	, PATH_SAMPLES
-	} from './constants.js';
+{
+	PATH_SAMPLE_SIMPLE_SCSS,
+	PATH_SAMPLE_SIMPLE_JS,
+	PATH_SAMPLE_SIMPLE_SASS,
+	PATH_SAMPLE_SIMPLE_SCSS_COMPILED,
+	PATH_SAMPLE_SIMPLE_SASS_COMPILED,
+	PATH_SAMPLES,
+	PATH_SAMPLE_POSTCSS,
+	PATH_SAMPLE_POSTCSS_COMPILED,
+	PATH_SAMPLE_POSTCSS_SOURCEMAP_COMPILED
+} from './constants.js';
 
 test(
 	'Loads default config',
@@ -150,6 +154,101 @@ test(
 				loadFn({ path: PATH_SAMPLE_SIMPLE_SASS })
 			).resolves.toMatchObject(
 				{ contents: sassTestCompiled
+				, loader: 'css'
+				}
+			);
+		})).resolves.toEqual(undefined);
+	}
+);
+
+test(
+	'Chains PostCSS',
+	async function testPostCSS() {
+		const sourceMapDisabled =
+			{ postcss:
+				{ use: true
+				}
+			};
+
+		const sourceMapEnabled =
+			{ sass:
+				{ sourceMap: 'sass.map'
+				, sourceMapEmbed: true
+				}
+			, postcss:
+				{ use: true
+				}
+			};
+
+		await expect(new Promise((ok, fail) => {
+			const fakeEsb =
+				{ onResolve(filter, fn) {
+					fn(
+						{ path: p.resolve(PATH_SAMPLE_POSTCSS)
+						, kind: 'import-statement'
+						, importer: p.resolve(PATH_SAMPLE_SIMPLE_JS)
+						}
+					);
+				}
+				, onLoad(filter, fn) {
+					ok(fn);
+				}
+				, initialOptions:
+					{ sourceRoot: PATH_SAMPLES
+					}
+				};
+
+			const plugin =
+				new ESBuildSASSModulesPlugin(sourceMapDisabled);
+
+			plugin.setup(fakeEsb);
+		})
+		.then(async loadFn => {
+			const compiled = await fsp.readFile(PATH_SAMPLE_POSTCSS_COMPILED)
+				.then(b => b.toString('utf8'));
+
+			await expect(
+				loadFn({ path: PATH_SAMPLE_POSTCSS })
+			).resolves.toMatchObject(
+				{ contents: compiled
+				, loader: 'css'
+				}
+			);
+		})).resolves.toEqual(undefined);
+
+		await expect(new Promise((ok, fail) => {
+			const fakeEsb =
+				{ onResolve(filter, fn) {
+					fn(
+						{ path: p.resolve(PATH_SAMPLE_POSTCSS)
+						, kind: 'import-statement'
+						, importer: p.resolve(PATH_SAMPLE_SIMPLE_JS)
+						}
+					);
+				}
+				, onLoad(filter, fn) {
+					ok(fn);
+				}
+				, initialOptions:
+					{ sourceRoot: PATH_SAMPLES
+					}
+				};
+
+			const plugin =
+				new ESBuildSASSModulesPlugin(sourceMapEnabled);
+
+			plugin.setup(fakeEsb);
+		})
+		.then(async loadFn => {
+			const compiled = await fsp.readFile(
+				PATH_SAMPLE_POSTCSS_SOURCEMAP_COMPILED
+			)
+			.then(b => b.toString('utf8'));
+
+			await expect(
+				loadFn({ path: PATH_SAMPLE_POSTCSS })
+			).resolves.toMatchObject(
+				{ contents: compiled
 				, loader: 'css'
 				}
 			);

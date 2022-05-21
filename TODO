@@ -3,8 +3,7 @@
 - [ ] URL resolver
 - [ ] Bundle resolver
 - [ ] PostCSS
-- [ ] Autoprefix
-- [ ] Configurable minify, SCSS compile options, PostCSS, ecc.
+- [x] Configurable minify, SCSS compile options, PostCSS, ecc.
 - [x] Add tests
 - [ ] Dynamic imports
 - [ ] Write documentation

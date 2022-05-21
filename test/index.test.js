@@ -80,7 +80,9 @@ test(
 test(
 	'Should produce sass bundle from import statement of sass sources',
 	async function testSimpleImportBuild() {
-		await expect(buildSimpleImportSCSS()).resolves.toEqual(expect.anything());
+		await expect(buildSimpleImportSCSS())
+			.resolves
+			.toEqual(expect.anything());
 
 		const compiledSimpleImportSCSS =
 			await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS_COMPILED);
@@ -90,7 +92,9 @@ test(
 				.then(b => b.equals(compiledSimpleImportSCSS))
 		).resolves.toBe(true);
 
-		await expect(buildSimpleImportSASS()).resolves.toEqual(expect.anything());
+		await expect(buildSimpleImportSASS())
+			.resolves
+			.toEqual(expect.anything());
 
 		const compiledSimpleImportSASS =
 			await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SASS_COMPILED);

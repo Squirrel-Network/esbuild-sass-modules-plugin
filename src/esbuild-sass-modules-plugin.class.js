@@ -1,8 +1,7 @@
-import esb from 'esbuild';
 import sass from 'sass';
 import postcss from 'postcss';
-import autoprefixer from 'autoprefixer';
 import p from 'path';
+import _ from 'lodash/fp';
 
 import defaultConfig from '../config.js';
 
@@ -15,10 +14,7 @@ export default class ESBuildSASSModulesPlugin {
 	config;
 
 	constructor(pluginConfig) {
-		this.config =
-			{ ...defaultConfig
-			, ...pluginConfig
-			};
+		this.config = _(defaultConfig).merge(pluginConfig).valueOf();
 	}
 
 	mark({ path, kind, importer }) {
@@ -55,13 +51,37 @@ export default class ESBuildSASSModulesPlugin {
 	}
 
 	async load(root, path) {
-		return this.compile(root, path)
-			.then(r => r.css.toString('utf8'))
-			.then(css => (
-				{ contents: css
+		const sass = this.compile(root, path);
+
+		if(this.config.postcss.use) {
+			return sass.then(r => postcss(this.config.postcss.plugins)
+				.process(
+					r.css.toString('utf8'),
+					{ ...this.config.postcss.custom
+					, from: undefined
+					, to: undefined
+					, map: (r.map
+						&& (
+							{ inline: true
+							, sourcesContent: true
+							, prev: r.map.toString('utf8')
+							}
+						// this config will not generate source files
+						) || false)
+					}
+				)
+			)
+			.then(r => (
+				{ contents: r.css
 				, loader: 'css'
 				}
 			));
+		}
+		else return sass.then(r => (
+			{ contents: r.css.toString('utf8')
+			, loader: 'css'
+			}
+		));
 	}
 
 	setup(esbconfig) {
