@@ -1,6 +1,5 @@
 import sass from 'sass';
 import postcss from 'postcss';
-import p from 'path';
 import _ from 'lodash/fp';
 
 import defaultConfig from '../config.js';
@@ -10,6 +9,7 @@ export { defaultConfig };
 const ImportResolver =
 	{ BUNDLE: 0
 	, INLINE: 1
+	, FILE: 2
 	};
 
 export { ImportResolver };
@@ -26,12 +26,11 @@ export default class ESBuildSASSModulesPlugin {
 
 	getImportResolverFor(path) {
 		if(path.startsWith('inline:')) return ImportResolver.INLINE;
+		else if(path.startsWith('file:')) return ImportResolver.FILE;
 		else return ImportResolver.BUNDLE;
 	}
 
-	resolve({ path, kind, importer }) {
-		const dir = p.parse(importer).dir;
-
+	async resolve(esbconfig, { path, kind, importer, resolveDir }) {
 		const resolver = this.getImportResolverFor(path);
 
 		const markedFile =
@@ -39,24 +38,54 @@ export default class ESBuildSASSModulesPlugin {
 			, namespace: ''
 			, pluginData:
 				{ importResolver: resolver
-				, loader: ''
+				, loader: undefined
+				, outfile: undefined
 				}
 			};
 
 		switch(resolver) {
 		case ImportResolver.BUNDLE:
-			markedFile.path = this.resolveSystemPath(dir, path);
+			const resolved = await esbconfig.resolve(path, { resolveDir });
+
+			if(!resolved.path) {
+				return { errors: resolved.errors, warnings: resolved.warnings };
+			}
+
+			markedFile.path = resolved.path;
 			markedFile.pluginData.loader = 'css';
 
 			break;
 
-		case ImportResolver.INLINE:
+		case ImportResolver.INLINE: {
 			const actualPath = path.substring('inline:'.length);
 
-			markedFile.path = this.resolveSystemPath(dir, actualPath);
+			const resolved =
+				await esbconfig.resolve(actualPath, { resolveDir });
+
+			if(!resolved.path) {
+				return { errors: resolved.errors, warnings: resolved.warnings };
+			}
+
+			markedFile.path = resolved.path;
 			markedFile.pluginData.loader = 'text';
 
 			break;
+		}
+		case ImportResolver.FILE: {
+			const actualPath = path.substring('file:'.length);
+
+			const resolved =
+				await esbconfig.resolve(actualPath, { resolveDir });
+
+			if(!resolved.path) {
+				return { errors: resolved.errors, warnings: resolved.warnings };
+			}
+
+			markedFile.path = resolved.path;
+			markedFile.pluginData.loader = 'file';
+
+			break;
+		}
 		}
 
 		switch(kind) {
@@ -66,7 +95,7 @@ export default class ESBuildSASSModulesPlugin {
 			break;
 
 		default:
-			throw `Unsupported kind of import '` + kind + '`';
+			throw `Unsupported kind of import \`${kind}'`;
 		}
 
 		return markedFile;
@@ -100,13 +129,7 @@ export default class ESBuildSASSModulesPlugin {
 		);
 	}
 
-	resolveSystemPath(root, path) {
-		return path.startsWith('.')
-			? p.resolve(root, path)
-			: path;
-	}
-
-	async load(path, { loader }) {
+	async load(esbconfig, path, { loader }) {
 		const sass = this.compile(path);
 
 		return this.config.postcss.use
@@ -130,7 +153,7 @@ export default class ESBuildSASSModulesPlugin {
 			{ filter: /\.s[ca]ss$/
 			, namespace: 'file'
 			},
-			args => this.resolve(args)
+			async args => this.resolve(esbconfig, args)
 		);
 
 		esbconfig.onLoad(
@@ -138,7 +161,7 @@ export default class ESBuildSASSModulesPlugin {
 			, namespace: ESBuildSASSModulesPlugin.namespace
 			},
 			async ({ path, pluginData }) =>
-				self.load(path, pluginData)
+				self.load(esbconfig, path, pluginData)
 		);
 	}
 }
