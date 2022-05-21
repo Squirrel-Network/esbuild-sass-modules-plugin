@@ -1,6 +1,5 @@
 import sass from 'sass';
 import postcss from 'postcss';
-import autoprefixer from 'autoprefixer';
 import p from 'path';
 import _ from 'lodash/fp';
 

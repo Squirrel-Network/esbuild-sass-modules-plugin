@@ -26,9 +26,6 @@ const config =
 			, stringifier: undefined
 			, syntax: undefined
 			}
-		, autoprefixer:
-			{ use: true
-			}
 		}
 	};
 
