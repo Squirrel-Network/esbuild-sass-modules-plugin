@@ -1,19 +1,23 @@
 import p from 'path';
 import fsp from 'fs/promises';
 
-import ESBuildSASSModulesPlugin
-	, { defaultConfig } from '../src/esbuild-sass-modules-plugin.class.js';
+import ESBuildSASSModulesPlugin, {
+	defaultConfig,
+	ImportResolver
+} from '../src/esbuild-sass-modules-plugin.class.js';
 import
 {
 	PATH_SAMPLE_SIMPLE_SCSS,
 	PATH_SAMPLE_SIMPLE_JS,
-	PATH_SAMPLE_SIMPLE_SASS,
-	PATH_SAMPLE_SIMPLE_SCSS_COMPILED,
-	PATH_SAMPLE_SIMPLE_SASS_COMPILED,
 	PATH_SAMPLES,
 	PATH_SAMPLE_POSTCSS,
 	PATH_SAMPLE_POSTCSS_COMPILED,
-	PATH_SAMPLE_POSTCSS_SOURCEMAP_COMPILED
+	PATH_SAMPLE_POSTCSS_SOURCEMAP_COMPILED,
+	PATH_SAMPLE_INLINE_JS,
+	PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS,
+	PATH_SAMPLE_SIMPLE_SASS,
+	PATH_SAMPLE_SIMPLE_SCSS_COMPILED,
+	PATH_SAMPLE_SIMPLE_SASS_COMPILED
 } from './constants.js';
 
 test(
@@ -67,7 +71,7 @@ test(
 
 test(
 	'Fails on unsupported import kind',
-	async function testSASSbuild() {
+	async function testUnsupportedImportKind() {
 		await expect(new Promise((ok, fail) => {
 			const plugin = new ESBuildSASSModulesPlugin();
 
@@ -93,9 +97,41 @@ test(
 	}
 );
 
+async function checkImportResolverType(type, scssPath, importer) {
+	return new Promise((ok, fail) => {
+		const plugin = new ESBuildSASSModulesPlugin();
+
+		const fakeEsb =
+			{ onResolve(filter, fn) {
+				const
+					{ path: pathSCSS
+					, namespace: namespaceSCSS
+					, pluginData
+					} =
+					fn(
+						{ path: scssPath
+						, kind: 'import-statement'
+						, importer
+						}
+					);
+
+				expect(pluginData)
+					.toMatchObject(
+						{ importResolver: type }
+					);
+			}
+			, onLoad(filter, fn) {
+				ok();
+			}
+			};
+
+		plugin.setup(fakeEsb);
+	});
+}
+
 test(
-	'Compiles sass sources from import statements',
-	async function testSASSbuild() {
+	'Bundles sass sources from import statements',
+	async function testSASSImport() {
 		await expect(new Promise((ok, fail) => {
 			const plugin = new ESBuildSASSModulesPlugin();
 
@@ -124,7 +160,7 @@ test(
 						.toBe(ESBuildSASSModulesPlugin.namespace);
 				}
 				, onLoad(filter, fn) {
-					ok([fn, plugin]);
+					ok(fn);
 				}
 				, initialOptions:
 					{ sourceRoot: PATH_SAMPLES
@@ -133,13 +169,20 @@ test(
 
 			expect(() => plugin.setup(fakeEsb)).not.toThrow();
 		})
-		.then(async ([loadFn, plugin]) => {
+		.then(async loadFn => {
 			const scssTestCompiled =
 				await fsp.readFile(PATH_SAMPLE_SIMPLE_SCSS_COMPILED)
 					.then(b => b.toString('utf8'));
 
 			await expect(
-				loadFn({ path: PATH_SAMPLE_SIMPLE_SCSS })
+				loadFn(
+					{ path: PATH_SAMPLE_SIMPLE_SCSS
+					, pluginData:
+						{ importResolver: ImportResolver.BUNDLE
+						, loader: 'css'
+						}
+					}
+				)
 			).resolves.toMatchObject(
 				{ contents: scssTestCompiled
 				, loader: 'css'
@@ -151,13 +194,37 @@ test(
 					.then(b => b.toString('utf8'));
 
 			await expect(
-				loadFn({ path: PATH_SAMPLE_SIMPLE_SASS })
+				loadFn(
+					{ path: PATH_SAMPLE_SIMPLE_SASS
+					, pluginData:
+						{ importResolver: ImportResolver.BUNDLE
+						, loader: 'css'
+						}
+					}
+				)
 			).resolves.toMatchObject(
 				{ contents: sassTestCompiled
 				, loader: 'css'
 				}
 			);
 		})).resolves.toEqual(undefined);
+	}
+);
+
+test(
+	'Detects the correct import resolver',
+	async function testImportResolverType() {
+		await expect(checkImportResolverType(
+			ImportResolver.BUNDLE,
+			PATH_SAMPLE_SIMPLE_SCSS,
+			PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS
+		)).resolves.toEqual(undefined);
+
+		await expect(checkImportResolverType(
+			ImportResolver.INLINE,
+			'inline:' + PATH_SAMPLE_SIMPLE_SCSS,
+			PATH_SAMPLE_INLINE_JS
+		)).resolves.toEqual(undefined);
 	}
 );
 
@@ -208,7 +275,14 @@ test(
 				.then(b => b.toString('utf8'));
 
 			await expect(
-				loadFn({ path: PATH_SAMPLE_POSTCSS })
+				loadFn(
+					{ path: PATH_SAMPLE_POSTCSS
+					, pluginData:
+						{ importResolver: ImportResolver.BUNDLE
+						, loader: 'css'
+						}
+					}
+				)
 			).resolves.toMatchObject(
 				{ contents: compiled
 				, loader: 'css'
@@ -246,7 +320,14 @@ test(
 			.then(b => b.toString('utf8'));
 
 			await expect(
-				loadFn({ path: PATH_SAMPLE_POSTCSS })
+				loadFn(
+					{ path: PATH_SAMPLE_POSTCSS
+					, pluginData:
+						{ importResolver: ImportResolver.BUNDLE
+						, loader: 'css'
+						}
+					}
+				)
 			).resolves.toMatchObject(
 				{ contents: compiled
 				, loader: 'css'

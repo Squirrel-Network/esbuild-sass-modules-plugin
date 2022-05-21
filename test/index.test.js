@@ -2,9 +2,11 @@ import fsp from 'fs/promises';
 import esb from 'esbuild';
 
 import plugin from '../src/index.js';
-import ESBuildSASSModulesPlugin, { defaultConfig }
+import ESBuildSASSModulesPlugin
 	from '../src/esbuild-sass-modules-plugin.class.js';
 import {
+	PATH_SAMPLE_INLINE_JS,
+	PATH_SAMPLE_INLINE_JS_COMPILED,
 	PATH_SAMPLE_OUTFILE,
 	PATH_SAMPLE_SIMPLE_JS,
 	PATH_SAMPLE_SIMPLE_JS_COMPILED,
@@ -48,6 +50,17 @@ async function buildSimpleImportSASS() {
 	);
 }
 
+async function buildInlineImport() {
+	return esb.build(
+		{ bundle: true
+		, sourceRoot: PATH_SAMPLES
+		, entryPoints: [ PATH_SAMPLE_INLINE_JS ]
+		, outfile: PATH_SAMPLE_OUTFILE
+		, plugins: [ plugin() ]
+		}
+	);
+}
+
 test(
 	'Creates the plugin instance',
 	async function testPluginInstanceCreation() {
@@ -77,31 +90,49 @@ test(
 	}
 );
 
+async function testSimpleImportBuild() {
+	await expect(buildSimpleImportSCSS())
+		.resolves
+		.toEqual(expect.anything());
+
+	const compiled =
+		await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS_COMPILED);
+
+	await expect(
+		fsp.readFile(PATH_SAMPLE_OUTFILE)
+			.then(b => b.equals(compiled))
+	).resolves.toBe(true);
+
+	await expect(buildSimpleImportSASS())
+		.resolves
+		.toEqual(expect.anything());
+
+	const compiledSimpleImportSASS =
+		await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SASS_COMPILED);
+
+	await expect(
+		fsp.readFile(PATH_SAMPLE_OUTFILE)
+			.then(b => b.equals(compiledSimpleImportSASS))
+	).resolves.toBe(true);
+}
+
+async function testInlineImportBuild() {
+	await expect(buildInlineImport())
+		.resolves
+		.toEqual(expect.anything());
+
+	const compiled = await fsp.readFile(PATH_SAMPLE_INLINE_JS_COMPILED);
+
+	await expect(
+		fsp.readFile(PATH_SAMPLE_OUTFILE)
+			.then(b => b.equals(compiled))
+	).resolves.toBe(true);
+}
+
 test(
-	'Should produce sass bundle from import statement of sass sources',
-	async function testSimpleImportBuild() {
-		await expect(buildSimpleImportSCSS())
-			.resolves
-			.toEqual(expect.anything());
-
-		const compiledSimpleImportSCSS =
-			await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS_COMPILED);
-
-		await expect(
-			fsp.readFile(PATH_SAMPLE_OUTFILE)
-				.then(b => b.equals(compiledSimpleImportSCSS))
-		).resolves.toBe(true);
-
-		await expect(buildSimpleImportSASS())
-			.resolves
-			.toEqual(expect.anything());
-
-		const compiledSimpleImportSASS =
-			await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SASS_COMPILED);
-
-		await expect(
-			fsp.readFile(PATH_SAMPLE_OUTFILE)
-				.then(b => b.equals(compiledSimpleImportSASS))
-		).resolves.toBe(true);
+	'Builds and resolves sass imports',
+	async function testImportResolverTypes() {
+		await testSimpleImportBuild();
+		await testInlineImportBuild();
 	}
 );
