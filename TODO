@@ -1,6 +1,6 @@
 - [x] Import statement
 - [x] Inline resolver
-- [ ] File resolver
+- [x] File resolver
 - [ ] URL resolver
 - [ ] Custom resolvers
 - [x] PostCSS
