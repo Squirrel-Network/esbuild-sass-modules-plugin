@@ -17,7 +17,7 @@ import
 	PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS,
 	PATH_SAMPLE_SIMPLE_SASS,
 	PATH_SAMPLE_SIMPLE_SCSS_COMPILED,
-	PATH_SAMPLE_SIMPLE_SASS_COMPILED
+	PATH_SAMPLE_SIMPLE_SASS_COMPILED, PATH_SAMPLE_FILE_JS
 } from './constants.js';
 
 test(
@@ -76,24 +76,26 @@ test(
 			const plugin = new ESBuildSASSModulesPlugin();
 
 			const fakeEsb =
-				{ onResolve(filter, fn) {
-					const { path: pathSCSS, namespace: namespaceSCSS } = fn(
-						{ path: p.resolve(PATH_SAMPLE_SIMPLE_SCSS)
+				{ async onResolve(filter, fn) {
+					const dir = p.dirname(p.resolve(PATH_SAMPLE_SIMPLE_SCSS, '../../'));
+
+					fn(
+						{ path: PATH_SAMPLE_SIMPLE_SCSS
 						, kind: 'unsupported'
 						, importer: p.resolve(PATH_SAMPLE_SIMPLE_JS)
+						, resolveDir: dir
 						}
-					);
-
-					expect(namespaceSCSS)
-						.toBe(ESBuildSASSModulesPlugin.namespace);
+					).catch(fail).then(ok);
 				}
 				, onLoad(filter, fn) {
-					ok([fn, plugin]);
+				}
+				, async resolve() {
+					return { path: p.resolve(PATH_SAMPLE_SIMPLE_SCSS) };
 				}
 				};
 
 			plugin.setup(fakeEsb);
-		})).rejects.toBe('Unsupported kind of import \'unsupported`');
+		})).rejects.toBe('Unsupported kind of import `unsupported\'');
 	}
 );
 
@@ -102,18 +104,19 @@ async function checkImportResolverType(type, scssPath, importer) {
 		const plugin = new ESBuildSASSModulesPlugin();
 
 		const fakeEsb =
-			{ onResolve(filter, fn) {
+			{ async onResolve(filter, fn) {
 				const
 					{ path: pathSCSS
 					, namespace: namespaceSCSS
 					, pluginData
-					} =
-					fn(
-						{ path: scssPath
-						, kind: 'import-statement'
-						, importer
-						}
-					);
+					} = await fn(
+					{ path: scssPath
+					, kind: 'import-statement'
+					, importer
+					, resolveDir:
+						p.dirname(scssPath)
+					}
+				);
 
 				expect(pluginData)
 					.toMatchObject(
@@ -122,6 +125,9 @@ async function checkImportResolverType(type, scssPath, importer) {
 			}
 			, onLoad(filter, fn) {
 				ok();
+			}
+			, async resolve() {
+				return { path: scssPath };
 			}
 			};
 
@@ -135,12 +141,18 @@ test(
 		await expect(new Promise((ok, fail) => {
 			const plugin = new ESBuildSASSModulesPlugin();
 
+			const dir = p.dirname(p.resolve(PATH_SAMPLE_SIMPLE_SCSS, '../../'));
+
 			const fakeEsb =
-				{ onResolve(filter, fn) {
-					const { path: pathSCSS, namespace: namespaceSCSS } = fn(
-						{ path: p.resolve(PATH_SAMPLE_SIMPLE_SCSS)
+				{ async onResolve(filter, fn) {
+					const
+						{ path: pathSCSS
+						, namespace: namespaceSCSS
+						} = await fn(
+						{ path: PATH_SAMPLE_SIMPLE_SCSS
 						, kind: 'import-statement'
 						, importer: p.resolve(PATH_SAMPLE_SIMPLE_JS)
+						, resolveDir: dir
 						}
 					);
 
@@ -148,8 +160,11 @@ test(
 					expect(namespaceSCSS)
 						.toBe(ESBuildSASSModulesPlugin.namespace);
 
-					const { path: pathSASS, namespace: namespaceSASS } = fn(
-						{ path: p.resolve(PATH_SAMPLE_SIMPLE_SASS)
+					const
+						{ path: pathSASS
+						, namespace: namespaceSASS
+						} = await fn(
+						{ path: PATH_SAMPLE_SIMPLE_SASS
 						, kind: 'import-statement'
 						, importer: p.resolve(PATH_SAMPLE_SIMPLE_JS)
 						}
@@ -162,9 +177,15 @@ test(
 				, onLoad(filter, fn) {
 					ok(fn);
 				}
-				, initialOptions:
-					{ sourceRoot: PATH_SAMPLES
+				, async resolve(path) {
+					if(path === PATH_SAMPLE_SIMPLE_SCSS) {
+						return { path: p.resolve(PATH_SAMPLE_SIMPLE_SCSS) };
 					}
+
+					if(path === PATH_SAMPLE_SIMPLE_SASS) {
+						return { path: p.resolve(PATH_SAMPLE_SIMPLE_SASS) };
+					}
+				}
 				};
 
 			expect(() => plugin.setup(fakeEsb)).not.toThrow();
@@ -216,7 +237,7 @@ test(
 	async function testImportResolverType() {
 		await expect(checkImportResolverType(
 			ImportResolver.BUNDLE,
-			PATH_SAMPLE_SIMPLE_SCSS,
+			p.basename(PATH_SAMPLE_SIMPLE_SCSS),
 			PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS
 		)).resolves.toEqual(undefined);
 
@@ -224,6 +245,12 @@ test(
 			ImportResolver.INLINE,
 			'inline:' + PATH_SAMPLE_SIMPLE_SCSS,
 			PATH_SAMPLE_INLINE_JS
+		)).resolves.toEqual(undefined);
+
+		await expect(checkImportResolverType(
+			ImportResolver.FILE,
+			'file:' + PATH_SAMPLE_SIMPLE_SCSS,
+			PATH_SAMPLE_FILE_JS
 		)).resolves.toEqual(undefined);
 	}
 );
@@ -249,20 +276,22 @@ test(
 
 		await expect(new Promise((ok, fail) => {
 			const fakeEsb =
-				{ onResolve(filter, fn) {
-					fn(
-						{ path: p.resolve(PATH_SAMPLE_POSTCSS)
+				{ async onResolve(filter, fn) {
+					await fn(
+						{ path: PATH_SAMPLE_POSTCSS
 						, kind: 'import-statement'
 						, importer: p.resolve(PATH_SAMPLE_SIMPLE_JS)
+						, resolveDir:
+							p.dirname(p.resolve(PATH_SAMPLE_POSTCSS))
 						}
 					);
 				}
 				, onLoad(filter, fn) {
 					ok(fn);
 				}
-				, initialOptions:
-					{ sourceRoot: PATH_SAMPLES
-					}
+				, async resolve() {
+					return { path: p.resolve(PATH_SAMPLE_POSTCSS) };
+				}
 				};
 
 			const plugin =
@@ -292,20 +321,22 @@ test(
 
 		await expect(new Promise((ok, fail) => {
 			const fakeEsb =
-				{ onResolve(filter, fn) {
-					fn(
-						{ path: p.resolve(PATH_SAMPLE_POSTCSS)
+				{ async onResolve(filter, fn) {
+					await fn(
+						{ path: PATH_SAMPLE_POSTCSS
 						, kind: 'import-statement'
 						, importer: p.resolve(PATH_SAMPLE_SIMPLE_JS)
+						, resolveDir:
+							p.dirname(p.resolve(PATH_SAMPLE_POSTCSS))
 						}
 					);
 				}
 				, onLoad(filter, fn) {
 					ok(fn);
 				}
-				, initialOptions:
-					{ sourceRoot: PATH_SAMPLES
-					}
+				, async resolve() {
+					return { path: p.resolve(PATH_SAMPLE_POSTCSS) };
+				}
 				};
 
 			const plugin =
