@@ -5,6 +5,7 @@ import plugin from '../src/index.js';
 import ESBuildSASSModulesPlugin
 	from '../src/esbuild-sass-modules-plugin.class.js';
 import {
+	PATH_SAMPLE_FILE_JS, PATH_SAMPLE_FILE_JS_COMPILED,
 	PATH_SAMPLE_INLINE_JS,
 	PATH_SAMPLE_INLINE_JS_COMPILED,
 	PATH_SAMPLE_OUTFILE,
@@ -61,6 +62,17 @@ async function buildInlineImport() {
 	);
 }
 
+async function buildFileImport() {
+	return esb.build(
+		{ bundle: true
+		, sourceRoot: PATH_SAMPLES
+		, entryPoints: [ PATH_SAMPLE_FILE_JS ]
+		, outfile: PATH_SAMPLE_OUTFILE
+		, plugins: [ plugin() ]
+		}
+	);
+}
+
 test(
 	'Creates the plugin instance',
 	async function testPluginInstanceCreation() {
@@ -90,43 +102,43 @@ test(
 	}
 );
 
-async function testSimpleImportBuild() {
-	await expect(buildSimpleImportSCSS())
+async function testBuild(esbResult, compiledPath) {
+	await expect(esbResult)
 		.resolves
 		.toEqual(expect.anything());
 
-	const compiled =
-		await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS_COMPILED);
+	const compiled = await fsp.readFile(compiledPath);
 
 	await expect(
 		fsp.readFile(PATH_SAMPLE_OUTFILE)
 			.then(b => b.equals(compiled))
-	).resolves.toBe(true);
-
-	await expect(buildSimpleImportSASS())
-		.resolves
-		.toEqual(expect.anything());
-
-	const compiledSimpleImportSASS =
-		await fsp.readFile(PATH_SAMPLE_SIMPLE_JS_IMPORT_SASS_COMPILED);
-
-	await expect(
-		fsp.readFile(PATH_SAMPLE_OUTFILE)
-			.then(b => b.equals(compiledSimpleImportSASS))
 	).resolves.toBe(true);
 }
 
+async function testSimpleImportBuild() {
+	await testBuild(
+		buildSimpleImportSCSS(),
+		PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS_COMPILED
+	);
+
+	await testBuild(
+		buildSimpleImportSASS(),
+		PATH_SAMPLE_SIMPLE_JS_IMPORT_SASS_COMPILED
+	);
+}
+
 async function testInlineImportBuild() {
-	await expect(buildInlineImport())
-		.resolves
-		.toEqual(expect.anything());
+	await testBuild(
+		buildInlineImport(),
+		PATH_SAMPLE_INLINE_JS_COMPILED
+	);
+}
 
-	const compiled = await fsp.readFile(PATH_SAMPLE_INLINE_JS_COMPILED);
-
-	await expect(
-		fsp.readFile(PATH_SAMPLE_OUTFILE)
-			.then(b => b.equals(compiled))
-	).resolves.toBe(true);
+async function testFileImportBuild() {
+	await testBuild(
+		buildFileImport(),
+		PATH_SAMPLE_FILE_JS_COMPILED
+	);
 }
 
 test(
@@ -134,5 +146,6 @@ test(
 	async function testImportResolverTypes() {
 		await testSimpleImportBuild();
 		await testInlineImportBuild();
+		await testFileImportBuild();
 	}
 );
