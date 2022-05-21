@@ -5,9 +5,12 @@ import plugin from '../src/index.js';
 import ESBuildSASSModulesPlugin
 	from '../src/esbuild-sass-modules-plugin.class.js';
 import {
-	PATH_SAMPLE_FILE_JS, PATH_SAMPLE_FILE_JS_COMPILED,
+	PATH_SAMPLE_FILE_JS,
+	PATH_SAMPLE_FILE_JS_COMPILED,
+	PATH_SAMPLE_FILE_UNRESOLVING,
 	PATH_SAMPLE_INLINE_JS,
 	PATH_SAMPLE_INLINE_JS_COMPILED,
+	PATH_SAMPLE_INLINE_UNRESOLVING,
 	PATH_SAMPLE_OUTFILE,
 	PATH_SAMPLE_SIMPLE_JS,
 	PATH_SAMPLE_SIMPLE_JS_COMPILED,
@@ -15,6 +18,7 @@ import {
 	PATH_SAMPLE_SIMPLE_JS_IMPORT_SASS_COMPILED,
 	PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS,
 	PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS_COMPILED,
+	PATH_SAMPLE_SIMPLE_UNRESOLVING,
 	PATH_SAMPLES
 } from './constants.js';
 
@@ -147,5 +151,40 @@ test(
 		await testSimpleImportBuild();
 		await testInlineImportBuild();
 		await testFileImportBuild();
+	}
+);
+
+test(
+	'Errors on unresolved files',
+	async function testUnresolved() {
+		await expect(esb.build(
+			{ bundle: true
+			, sourceRoot: PATH_SAMPLES
+			, entryPoints: [ PATH_SAMPLE_SIMPLE_UNRESOLVING ]
+			, outfile: PATH_SAMPLE_OUTFILE
+			, plugins: [ plugin() ]
+			, logLevel: 'silent'
+			}
+		)).rejects.toThrow();
+
+		await expect(esb.build(
+			{ bundle: true
+			, sourceRoot: PATH_SAMPLES
+			, entryPoints: [ PATH_SAMPLE_INLINE_UNRESOLVING ]
+			, outfile: PATH_SAMPLE_OUTFILE
+			, plugins: [ plugin() ]
+			, logLevel: 'silent'
+			}
+		)).rejects.toThrow();
+
+		await expect(esb.build(
+			{ bundle: true
+			, sourceRoot: PATH_SAMPLES
+			, entryPoints: [ PATH_SAMPLE_FILE_UNRESOLVING ]
+			, outfile: PATH_SAMPLE_OUTFILE
+			, plugins: [ plugin() ]
+			, logLevel: 'silent'
+			}
+		)).rejects.toThrow();
 	}
 );
