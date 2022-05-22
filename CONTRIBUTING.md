@@ -139,6 +139,4 @@ of Conduct should be enough.
 Thank you from me and the whole Squirrel Network for contributing to this small
 plugin!
 
-<p align=center>
 ![Squirrel Network](https://avatars.githubusercontent.com/u/61167371?s=200&v=4)
-</p>
