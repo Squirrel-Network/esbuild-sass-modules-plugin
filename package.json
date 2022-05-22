@@ -5,7 +5,6 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "yarn node --experimental-vm-modules $(yarn bin jest) --maxWorkers=1"
     "test": "yarn node --experimental-vm-modules $(yarn bin jest) --verbose --maxWorkers=1"
   },
   "repository": {
