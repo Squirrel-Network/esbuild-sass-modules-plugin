@@ -13,6 +13,8 @@ import {
 	PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS,
 	PATH_SAMPLES
 } from './constants.js';
+import ESBuildSASSModulesPlugin, { ImportResolver } from '../src/esbuild-sass-modules-plugin.class.js';
+import p from 'path';
 
 const COMMON_ESBUILD_OPTIONS =
 	{ bundle: true
@@ -81,6 +83,68 @@ async function testBuild(esbResult, compiledPath) {
 	await expectOutfileToMatch(compiledPath);
 }
 
+async function testSASSbuild(loadFn, sourcePath, compiledPath) {
+	const scssTestCompiled =
+		await fsp.readFile(compiledPath)
+			.then(b => b.toString('utf8'));
+
+	await expect(
+		loadFn(
+			{ path: sourcePath
+			, pluginData:
+				{ importResolver: ImportResolver.BUNDLE
+				, loader: 'css'
+				}
+			}
+		)
+	).resolves.toMatchObject(
+		{ contents: scssTestCompiled
+		, loader: 'css'
+		}
+	);
+}
+
+function chainTestSASSbuild(sourcePath, compiledPath) {
+	return async loadFn => testSASSbuild(loadFn, sourcePath, compiledPath)
+		.then(() => loadFn);
+}
+
+async function expectImportResolverToMatch(type, scssPath, importer) {
+	await expect(new Promise((ok, fail) => {
+		const plugin = new ESBuildSASSModulesPlugin();
+
+		const fakeEsb =
+			{ async onResolve(filter, fn) {
+				const
+					{ path: pathSCSS
+					, namespace: namespaceSCSS
+					, pluginData
+					} = await fn(
+					{ path: scssPath
+					, kind: 'import-statement'
+					, importer
+					, resolveDir:
+						p.dirname(scssPath)
+					}
+				);
+
+				expect(pluginData)
+					.toMatchObject(
+						{ importResolver: type }
+					);
+			}
+			, async onLoad(filter, fn) {
+				ok();
+			}
+			, async resolve() {
+				return { path: scssPath };
+			}
+			};
+
+		expect(() => plugin.setup(fakeEsb)).not.toThrow();
+	})).resolves.toBeUndefined();
+}
+
 export
 	{ COMMON_ESBUILD_OPTIONS
 	, commonESBuildTest
@@ -95,4 +159,7 @@ export
 	, expectNotToBuild
 	, expectOutfileToMatch
 	, testBuild
+	, testSASSbuild
+	, chainTestSASSbuild
+	, expectImportResolverToMatch
 	};
