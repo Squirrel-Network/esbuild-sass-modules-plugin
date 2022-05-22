@@ -1,7 +1,10 @@
-- [ ] Inline resolver
-- [ ] URL resolver
-- [ ] Bundle resolver
-- [ ] PostCSS
-- [ ] Autoprefix
-- [ ] Configurable minify, SCSS compile options, PostCSS, ecc.
-- [ ] Add tests
+- [x] Import statement
+- [x] Inline resolver
+- [x] File resolver
+- [x] PostCSS
+- [x] Configurable minify, SCSS compile options, PostCSS, ecc.
+- [x] Write tests
+- [x] Dynamic imports
+- [x] Write documentation
+- [x] 100% Coverage before 1.0.0
+- [x] Project cleanup

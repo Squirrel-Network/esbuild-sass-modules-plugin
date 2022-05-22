@@ -1,35 +1,38 @@
 {
-	"name": "@squirrelnetwork/esbuild-sass-modules-plugin",
-	"version": "1.0.0",
-	"description": "A sass module loader plugin for esbuild.",
-	"main": "src/index.js",
-	"type": "module",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "gulp"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/Squirrel-Network/esbuild-sass-modules-plugin.git"
-	},
-	"keywords": [
-		"esbuild",
-		"sass",
-		"scss",
-		"module",
-		"plugin"
-	],
-	"author": "TheLonelyAdventurer",
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/Squirrel-Network/esbuild-sass-modules-plugin/issues"
-	},
-	"homepage": "https://github.com/Squirrel-Network/esbuild-sass-modules-plugin#readme",
-	"devDependencies": {
-		"autoprefixer": "^10.4.7",
-		"esbuild": "^0.14.39",
-		"jest": "^28.1.0",
-		"postcss": "^8.4.13",
-		"sass": "^1.51.0"
-	}
+  "name": "@squirrelnetwork/esbuild-sass-modules-plugin",
+  "version": "0.1.0",
+  "description": "A sass module loader plugin for esbuild.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "yarn node --experimental-vm-modules $(yarn bin jest) --verbose --maxWorkers=1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Squirrel-Network/esbuild-sass-modules-plugin.git"
+  },
+  "keywords": [
+    "esbuild",
+    "sass",
+    "scss",
+    "module",
+    "plugin",
+    "postcss",
+    "autoprefixer"
+  ],
+  "author": "TheLonelyAdventurer",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Squirrel-Network/esbuild-sass-modules-plugin/issues"
+  },
+  "homepage": "https://github.com/Squirrel-Network/esbuild-sass-modules-plugin#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.39",
+    "jest": "^28.1.0",
+    "postcss": "^8.4.13",
+    "sass": "^1.51.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
