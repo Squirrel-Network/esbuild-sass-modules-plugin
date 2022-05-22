@@ -9,7 +9,6 @@ import
 {
 	PATH_SAMPLE_SIMPLE_SCSS,
 	PATH_SAMPLE_SIMPLE_JS,
-	PATH_SAMPLES,
 	PATH_SAMPLE_POSTCSS,
 	PATH_SAMPLE_POSTCSS_COMPILED,
 	PATH_SAMPLE_POSTCSS_SOURCEMAP_COMPILED,
@@ -17,7 +16,9 @@ import
 	PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS,
 	PATH_SAMPLE_SIMPLE_SASS,
 	PATH_SAMPLE_SIMPLE_SCSS_COMPILED,
-	PATH_SAMPLE_SIMPLE_SASS_COMPILED, PATH_SAMPLE_FILE_JS
+	PATH_SAMPLE_SIMPLE_SASS_COMPILED,
+	PATH_SAMPLE_FILE_JS,
+	PATH_SAMPLE_DYNAMIC_SIMPLE_JS
 } from './constants.js';
 
 test(
@@ -231,6 +232,65 @@ test(
 		})).resolves.toEqual(undefined);
 	}
 );
+
+test(
+	'Bundles sass sources from dynamic imports',
+	async function testSASSDynamicImport() {
+		await expect(new Promise((ok, fail) => {
+			const plugin = new ESBuildSASSModulesPlugin();
+
+			const dir =
+				p.dirname(p.resolve(PATH_SAMPLE_DYNAMIC_SIMPLE_JS, '../../'));
+
+			const fakeEsb =
+				{ async onResolve(filter, fn) {
+					const
+						{ path: pathSCSS
+						, namespace: namespaceSCSS
+						} = await fn(
+						{ path: PATH_SAMPLE_SIMPLE_SCSS
+						, kind: 'dynamic-import'
+						, importer: p.resolve(PATH_SAMPLE_DYNAMIC_SIMPLE_JS)
+						, resolveDir: dir
+						}
+					);
+
+					expect(pathSCSS).toBe(p.resolve(PATH_SAMPLE_SIMPLE_SCSS));
+					expect(namespaceSCSS)
+						.toBe(ESBuildSASSModulesPlugin.namespace);
+				}
+				, onLoad(filter, fn) {
+					ok(fn);
+				}
+				, async resolve(path) {
+					return { path: p.resolve(PATH_SAMPLE_SIMPLE_SCSS) };
+				}
+				};
+
+			expect(() => plugin.setup(fakeEsb)).not.toThrow();
+		})
+		.then(async loadFn => {
+			const scssTestCompiled =
+				await fsp.readFile(PATH_SAMPLE_SIMPLE_SCSS_COMPILED)
+					.then(b => b.toString('utf8'));
+
+			await expect(
+				loadFn(
+					{ path: PATH_SAMPLE_SIMPLE_SCSS
+					, pluginData:
+						{ importResolver: ImportResolver.BUNDLE
+						, loader: 'css'
+						}
+					}
+				)
+			).resolves.toMatchObject(
+				{ contents: scssTestCompiled
+				, loader: 'css'
+				}
+			);
+		})).resolves.toEqual(undefined);
+	}
+)
 
 test(
 	'Detects the correct import resolver',
