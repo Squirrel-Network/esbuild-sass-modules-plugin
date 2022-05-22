@@ -6,5 +6,5 @@
 - [x] Write tests
 - [x] Dynamic imports
 - [ ] Write documentation
-- [ ] 100% Coverage before 1.0.0
-- [ ] Project cleanup
+- [x] 100% Coverage before 1.0.0
+- [x] Project cleanup
