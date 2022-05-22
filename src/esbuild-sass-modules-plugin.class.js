@@ -39,7 +39,6 @@ export default class ESBuildSASSModulesPlugin {
 			, pluginData:
 				{ importResolver: resolver
 				, loader: undefined
-				, outfile: undefined
 				}
 			};
 
