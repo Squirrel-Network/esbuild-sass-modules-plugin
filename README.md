@@ -29,6 +29,4 @@ of this project.
 
 [^1]: dart-sass fails to compile in tests; see [dart-sass#1692](https://github.com/sass/dart-sass/issues/1692)
 
-<p align=center>
 ![Squirrel Network](https://avatars.githubusercontent.com/u/61167371?s=200&v=4)
-</p>

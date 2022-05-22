@@ -76,6 +76,4 @@ available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.ht
 For answers to common questions about this code of conduct, see
 https://www.contributor-covenant.org/faq
 
-<p align=center>
 ![Squirrel Network](https://avatars.githubusercontent.com/u/61167371?s=200&v=4)
-</p>
