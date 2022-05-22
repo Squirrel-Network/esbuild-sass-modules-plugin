@@ -5,6 +5,7 @@ import plugin from '../src/index.js';
 import ESBuildSASSModulesPlugin
 	from '../src/esbuild-sass-modules-plugin.class.js';
 import {
+	PATH_SAMPLE_DYNAMIC_SIMPLE_JS, PATH_SAMPLE_DYNAMIC_SIMPLE_JS_COMPILED,
 	PATH_SAMPLE_FILE_JS,
 	PATH_SAMPLE_FILE_JS_COMPILED,
 	PATH_SAMPLE_FILE_UNRESOLVING,
@@ -28,6 +29,7 @@ async function buildSimple() {
 		, sourceRoot: PATH_SAMPLES
 		, entryPoints: [ PATH_SAMPLE_SIMPLE_JS ]
 		, outfile: PATH_SAMPLE_OUTFILE
+		, minify: true
 		, plugins: [ plugin() ]
 		}
 	);
@@ -39,6 +41,7 @@ async function buildSimpleImportSCSS() {
 		, sourceRoot: PATH_SAMPLES
 		, entryPoints: [ PATH_SAMPLE_SIMPLE_JS_IMPORT_SCSS ]
 		, outfile: PATH_SAMPLE_OUTFILE
+		, minify: true
 		, plugins: [ plugin() ]
 		}
 	);
@@ -50,6 +53,7 @@ async function buildSimpleImportSASS() {
 		, sourceRoot: PATH_SAMPLES
 		, entryPoints: [ PATH_SAMPLE_SIMPLE_JS_IMPORT_SASS ]
 		, outfile: PATH_SAMPLE_OUTFILE
+		, minify: true
 		, plugins: [ plugin() ]
 		}
 	);
@@ -61,6 +65,7 @@ async function buildInlineImport() {
 		, sourceRoot: PATH_SAMPLES
 		, entryPoints: [ PATH_SAMPLE_INLINE_JS ]
 		, outfile: PATH_SAMPLE_OUTFILE
+		, minify: true
 		, plugins: [ plugin() ]
 		}
 	);
@@ -72,6 +77,19 @@ async function buildFileImport() {
 		, sourceRoot: PATH_SAMPLES
 		, entryPoints: [ PATH_SAMPLE_FILE_JS ]
 		, outfile: PATH_SAMPLE_OUTFILE
+		, minify: true
+		, plugins: [ plugin() ]
+		}
+	);
+}
+
+async function buildDynamicImportSCSS() {
+	return esb.build(
+		{ bundle: true
+		, sourceRoot: PATH_SAMPLES
+		, entryPoints: [ PATH_SAMPLE_DYNAMIC_SIMPLE_JS ]
+		, outfile: PATH_SAMPLE_OUTFILE
+		, minify: true
 		, plugins: [ plugin() ]
 		}
 	);
@@ -111,12 +129,10 @@ async function testBuild(esbResult, compiledPath) {
 		.resolves
 		.toEqual(expect.anything());
 
+	const outfile = await fsp.readFile(PATH_SAMPLE_OUTFILE);
 	const compiled = await fsp.readFile(compiledPath);
 
-	await expect(
-		fsp.readFile(PATH_SAMPLE_OUTFILE)
-			.then(b => b.equals(compiled))
-	).resolves.toBe(true);
+	expect(outfile.equals(compiled)).toBe(true);
 }
 
 async function testSimpleImportBuild() {
@@ -145,12 +161,26 @@ async function testFileImportBuild() {
 	);
 }
 
+async function testDynamicImportBuild() {
+	await testBuild(
+		buildDynamicImportSCSS(),
+		PATH_SAMPLE_DYNAMIC_SIMPLE_JS_COMPILED
+	);
+}
+
 test(
 	'Builds and resolves sass imports',
 	async function testImportResolverTypes() {
 		await testSimpleImportBuild();
 		await testInlineImportBuild();
 		await testFileImportBuild();
+	}
+);
+
+test(
+	'Builds and resolves dynamic sass imports',
+	async function testImportResolverTypes() {
+		await testDynamicImportBuild();
 	}
 );
 
