@@ -44,7 +44,7 @@ export default class ESBuildSASSModulesPlugin {
 			};
 
 		switch(resolver) {
-		case ImportResolver.BUNDLE:
+		case ImportResolver.BUNDLE: {
 			const resolved = await esbconfig.resolve(path, { resolveDir });
 
 			if(!resolved.path) {
@@ -55,7 +55,7 @@ export default class ESBuildSASSModulesPlugin {
 			markedFile.pluginData.loader = 'css';
 
 			break;
-
+		}
 		case ImportResolver.INLINE: {
 			const actualPath = path.substring('inline:'.length);
 
@@ -90,13 +90,14 @@ export default class ESBuildSASSModulesPlugin {
 
 		switch(kind) {
 		case 'dynamic-import':
-		case 'import-statement':
+		case 'import-statement': {
 			markedFile.namespace = ESBuildSASSModulesPlugin.namespace;
 
 			break;
-
-		default:
-			throw `Unsupported kind of import \`${kind}'`;
+		}
+		default: {
+			throw `Unsupported kind of import \`${ kind }'`;
+		}
 		}
 
 		return markedFile;
