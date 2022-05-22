@@ -89,6 +89,7 @@ export default class ESBuildSASSModulesPlugin {
 		}
 
 		switch(kind) {
+		case 'dynamic-import':
 		case 'import-statement':
 			markedFile.namespace = ESBuildSASSModulesPlugin.namespace;
 
