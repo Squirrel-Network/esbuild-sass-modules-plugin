@@ -4,7 +4,7 @@
 - [x] PostCSS
 - [x] Configurable minify, SCSS compile options, PostCSS, ecc.
 - [x] Write tests
-- [ ] Dynamic imports
+- [x] Dynamic imports
 - [ ] Write documentation
 - [ ] 100% Coverage before 1.0.0
 - [ ] Project cleanup
