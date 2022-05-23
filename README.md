@@ -8,7 +8,19 @@ files.
 
 > Note: this package is a module.
 
-## Basic usge:
+## Install
+
+### Using NPM
+```shell
+$ npm install --save-dev @squirrelnetwork/esbuild-sass-modules-plugin
+```
+
+### Using Yarn
+```shell
+$ yarn add -D @squirrelnetwork/esbuild-sass-modules-plugin
+```
+
+## Basic usage:
 
 ```js
 import esb from 'esbuild';
