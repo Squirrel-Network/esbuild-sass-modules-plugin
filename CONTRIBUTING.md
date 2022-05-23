@@ -68,6 +68,7 @@ This repository is organized in the following branches:
 * `master`: production-ready code expected to be published on npm
 * `develop`: working tested code that merges the features and eventually gets
 hotfixes
+* `release`: production-ready code cleaned up to be merged with master
 * `feature/`: the branches under this name represent the features of this
 package and should be named accordingly
 * `testing`: for developing and fixing the test suites themselves
@@ -85,9 +86,12 @@ The usual workflow is as defined below:
 9. If everything goes well, checkout `feature/` again and merge `testing` to
 your `feature/`
 10. Merge `feature/` into `develop`
+11. When the requirements of a new release are met, it will be merged in
+`release` and then in `master`.
+Tests or build files should not be included in the releases.
 
 > Note: please make sure that all the branches you're working on are up-to-date,
-> and do not directly merge on `master`.
+> and do not directly merge on `master` or `release`.
 
 ### Code style
 
