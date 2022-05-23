@@ -32,14 +32,19 @@ build
 # Jest coverage
 coverage
 
-# Jest tests
-test
-
-# Intellij stuff
-.idea
-
 # Yarn files
-.yarn/
-.yarnrc.yml
 .pnp.loader.mjs
 .pnp.cjs
+
+# Do not add these to releases
+test
+jest.config.mjs
+.idea
+.yarn/
+.yarnrc.yml
+.editorconfig
+*.bak
+TODO.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+yarn.lock
