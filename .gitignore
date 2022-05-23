@@ -33,8 +33,7 @@ build
 coverage
 
 # Yarn files
-.yarn/install-state.gz
-.yarn/unplugged
-.yarn/cache
+.yarn/
+.yarnrc.yml
 .pnp.loader.mjs
 .pnp.cjs
