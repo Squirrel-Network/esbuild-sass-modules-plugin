@@ -35,6 +35,9 @@ coverage
 # Jest tests
 test
 
+# Intellij stuff
+.idea
+
 # Yarn files
 .yarn/
 .yarnrc.yml
