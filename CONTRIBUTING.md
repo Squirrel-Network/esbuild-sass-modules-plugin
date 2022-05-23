@@ -68,7 +68,7 @@ This repository is organized in the following branches:
 * `master`: production-ready code expected to be published on npm
 * `develop`: working tested code that merges the features and eventually gets
 hotfixes
-* `release`: production-ready code cleaned up to be merged with master
+* `release`: production-ready code cleaned up to be published
 * `feature/`: the branches under this name represent the features of this
 package and should be named accordingly
 * `testing`: for developing and fixing the test suites themselves
