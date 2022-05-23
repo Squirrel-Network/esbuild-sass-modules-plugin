@@ -32,6 +32,9 @@ build
 # Jest coverage
 coverage
 
+# Jest tests
+test
+
 # Yarn files
 .yarn/
 .yarnrc.yml
