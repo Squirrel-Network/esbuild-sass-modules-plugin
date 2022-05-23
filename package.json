@@ -1,6 +1,6 @@
 {
   "name": "@squirrelnetwork/esbuild-sass-modules-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A sass module loader plugin for esbuild.",
   "main": "src/index.js",
   "type": "module",
@@ -28,12 +28,12 @@
   "homepage": "https://github.com/Squirrel-Network/esbuild-sass-modules-plugin#readme",
   "devDependencies": {
     "esbuild": "^0.14.39",
-    "jest": "^28.1.0",
-    "postcss": "^8.4.13",
-    "sass": "^1.51.0"
+    "jest": "^28.1.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "postcss": "^8.4.14",
+    "sass": "^1.52.1"
   },
   "packageManager": "yarn@3.2.1"
 }
