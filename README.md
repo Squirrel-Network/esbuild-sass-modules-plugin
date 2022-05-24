@@ -8,7 +8,19 @@ files.
 
 > Note: this package is a module.
 
-## Basic usge:
+## Install
+
+### Using NPM
+```shell
+$ npm install --save-dev @squirrelnetwork/esbuild-sass-modules-plugin
+```
+
+### Using Yarn
+```shell
+$ yarn add -D @squirrelnetwork/esbuild-sass-modules-plugin
+```
+
+## Basic usage
 
 ```js
 import esb from 'esbuild';
@@ -24,29 +36,34 @@ await esb.build(
 );
 ```
 
-> Note: if you see an error in console like this:
-> ```js
-> node:internal/process/esm_loader:94
->     internalBinding('errors').triggerUncaughtException(
->                               ^
->
-> Error [ERR_UNSUPPORTED_DIR_IMPORT]: Directory import 'node_modules\lodash\fp' is not supported resolving ES modules imported from node_modules\@squirrelnetwork\esbuild-sass-modules-plugin\src\esbuild-sass-modules-plugin.class.js
-> Did you mean to import lodash/fp.js?
->       at new NodeError (node:internal/errors:371:5)
->       at finalizeResolution (node:internal/modules/esm/resolve:412:17)
->       at moduleResolve (node:internal/modules/esm/resolve:932:10)
->       at defaultResolve (node:internal/modules/esm/resolve:1044:11)
->       at ESMLoader.resolve (node:internal/modules/esm/loader:422:30)
->       at ESMLoader.getModuleJob (node:internal/modules/esm/loader:222:40)
->       at ModuleWrap.<anonymous> (node:internal/modules/esm/module_job:76:40)
->       at link (node:internal/modules/esm/module_job:75:36) {
->   code: 'ERR_UNSUPPORTED_DIR_IMPORT',
->   url: 'file:///.../node_modules/lodash/fp'
-> }
-> ```
-> Then you need to
-> [add the flag](https://nodejs.org/api/cli.html#cli_experimental_specifier_resolution_mode)
-> `--experimental-specifier-resolution=node` when running node.
+## Resolvers
+
+Resolvers modify the behavior of the plugin when importing files.
+
+### Bundle resolver
+
+```js
+import 'source.scss';
+```
+
+### Inline resolver
+
+```js
+import style from 'inline:source.scss';
+
+// contains the compiled css text
+console.log(style);
+```
+
+### File resolver
+
+```js
+import style from 'file:source.scss';
+
+// contains the text path to be fetched
+fetch(style)
+	.then(css => console.log(css));
+```
 
 ## Documentation
 
