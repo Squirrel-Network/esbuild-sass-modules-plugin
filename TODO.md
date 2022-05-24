@@ -8,3 +8,5 @@
 - [x] Write documentation
 - [x] 100% Coverage before 1.0.0
 - [x] Project cleanup
+- [ ] Use the modern `compile()` API
+[like here](https://github.com/sass/dart-sass/issues/1692#issuecomment-1135536368)
