@@ -61,7 +61,7 @@ console.log(style);
 import style from 'file:source.scss';
 
 // contains the text path to be fetched
-fetch(styleFilePath)
+fetch(style)
 	.then(css => console.log(css));
 ```
 
