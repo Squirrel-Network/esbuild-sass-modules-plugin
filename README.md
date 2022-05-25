@@ -65,6 +65,36 @@ fetch(style)
 	.then(css => console.log(css));
 ```
 
+## PostCSS and its plugins
+
+Just set the `postcss.use` to `true` to enable PostCSS and set `postcss.plugins`
+to an array of plugins.
+
+### Autoprefixer example
+
+```js
+import esb from 'esbuild';
+import sassModules from '@squirrelnetwork/esbuild-sass-modules-plugin';
+import autoprefixer from 'autoprefixer';
+
+await esb.build(
+	{ bundle: true
+	, sourceRoot: 'src/'
+	, entryPoints: [ 'src/index.js' ]
+	, outfile: 'build/app.js'
+	, plugins:
+		[ sassModules(
+			{ postcss:
+				{ use: true
+				, plugins: [ autoprefixer ]
+				}
+			}
+		)
+		]
+	}
+);
+```
+
 ## Documentation
 
 See the [wiki](https://github.com/Squirrel-Network/esbuild-sass-modules-plugin/wiki/)
