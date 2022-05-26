@@ -8,5 +8,7 @@
 - [x] Write documentation
 - [x] 100% Coverage before 1.0.0
 - [x] Project cleanup
-- [ ] Use the modern `compile()` API
-[like here](https://github.com/sass/dart-sass/issues/1692#issuecomment-1135536368)
+- [ ] <s>Use the modern `compile()` API
+  [like here](https://github.com/sass/dart-sass/issues/1692#issuecomment-1135536368)</s>;
+  ([does not work](https://github.com/kayahr/jest-environment-node-single-context/issues/10))
+- [ ] Parametrize SASS files
