@@ -1,7 +1,8 @@
 import sass from 'sass';
 
 const config =
-	{ sass:
+	{ useLegacySass: false
+	, sass:
 		{ importer: null
 		, indentType: 'tab'
 		, indentWidth: 4
@@ -17,6 +18,19 @@ const config =
 		, quietDeps: true
 		, verbose: false
 		, logger: sass.Logger.silent
+		}
+	, sassCompile:
+		{ alertAscii: false
+		, alertColor: true
+		, functions: {}
+		, importers: []
+		, loadPaths: []
+		, logger: sass.Logger.silent
+		, quietDeps: true
+		, sourceMap: false
+		, sourceMapIncludeSources: false
+		, style: 'compressed'
+		, verbose: false
 		}
 	, postcss:
 		{ use: false

@@ -102,7 +102,7 @@ export default class ESBuildSASSModulesPlugin {
 		return markedFile;
 	}
 
-	async compile(path) {
+	async compileLegacy(path) {
 		return sass.renderSync(
 			{ ...this.config.sass
 			, file: path
@@ -110,10 +110,14 @@ export default class ESBuildSASSModulesPlugin {
 		);
 	}
 
+	async compile(path) {
+		return sass.compile(path, this.config.sassCompile);
+	}
+
 	async processPostCSS(sassChain) {
 		return sassChain.then(r => postcss(this.config.postcss.plugins)
 			.process(
-				r.css.toString('utf8'),
+				r.css,
 				{ ...this.config.postcss.custom
 				, from: undefined
 				, to: undefined
@@ -121,7 +125,7 @@ export default class ESBuildSASSModulesPlugin {
 					&& (
 						{ inline: true
 						, sourcesContent: true
-						, prev: r.map.toString('utf8')
+						, prev: r.map
 						}
 						// this config will not generate source files
 					) || false)
@@ -131,7 +135,19 @@ export default class ESBuildSASSModulesPlugin {
 	}
 
 	async load(esbconfig, path, { loader }) {
-		const sass = this.compile(path);
+		const sass = this.config.useLegacySass
+			? this.compileLegacy(path)
+				.then(({ map, css }) => (
+					{ map: map.toString('utf8')
+					, css: css.toString('utf8')
+					}
+				))
+			: this.compile(path)
+				.then(({ sourceMap, css }) => (
+					{ map: JSON.stringify(sourceMap)
+					, css
+					}
+				));
 
 		return this.config.postcss.use
 			? this.processPostCSS(sass)

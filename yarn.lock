@@ -740,6 +740,7 @@ __metadata:
   dependencies:
     esbuild: ^0.14.39
     jest: ^28.1.0
+    jest-environment-node-single-context: ^28.0.0
     lodash: ^4.17.21
     postcss: ^8.4.14
     sass: ^1.52.1
@@ -2339,7 +2340,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-node@npm:^28.1.0":
+"jest-environment-node-single-context@npm:^28.0.0":
+  version: 28.0.0
+  resolution: "jest-environment-node-single-context@npm:28.0.0"
+  dependencies:
+    jest-environment-node: ^28.0.2
+  checksum: c8071067f2042f27661b05ac3999cb2e750379c702a0f0e2b100a9efe17c92be485b515ede71c71ef88c45cc72aeb7130a31c8d18ceb47a69e28fdc2a2d20596
+  languageName: node
+  linkType: hard
+
+"jest-environment-node@npm:^28.0.2, jest-environment-node@npm:^28.1.0":
   version: 28.1.0
   resolution: "jest-environment-node@npm:28.1.0"
   dependencies:

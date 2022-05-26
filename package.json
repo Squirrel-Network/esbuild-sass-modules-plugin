@@ -28,7 +28,8 @@
   "homepage": "https://github.com/Squirrel-Network/esbuild-sass-modules-plugin#readme",
   "devDependencies": {
     "esbuild": "^0.14.39",
-    "jest": "^28.1.0"
+    "jest": "^28.1.0",
+    "jest-environment-node-single-context": "^28.0.0"
   },
   "dependencies": {
     "lodash": "^4.17.21",
