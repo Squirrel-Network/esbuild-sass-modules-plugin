@@ -2,6 +2,7 @@
 A sass module loader plugin for esbuild.
 
 [![npm package version](https://img.shields.io/npm/v/@squirrelnetwork/esbuild-sass-modules-plugin?label=%40squirrelnetwork%2Fesbuild-sass-modules-plugin&logo=npm)](https://www.npmjs.com/package/@squirrelnetwork/esbuild-sass-modules-plugin)
+![license](https://img.shields.io/npm/l/@squirrelnetwork/esbuild-sass-modules-plugin)
 
 This plugin allows .scss and .sass files to be imported as modules in javascript
 files.
