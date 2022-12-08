@@ -1,7 +1,8 @@
 # esbuild-sass-modules-plugin
 A sass module loader plugin for esbuild.
 
-![npm package version](https://img.shields.io/npm/v/@squirrelnetwork/esbuild-sass-modules-plugin?label=%40squirrelnetwork%2Fesbuild-sass-modules-plugin&logo=npm)
+[![npm package version](https://img.shields.io/npm/v/@squirrelnetwork/esbuild-sass-modules-plugin?label=%40squirrelnetwork%2Fesbuild-sass-modules-plugin&logo=npm)](https://www.npmjs.com/package/@squirrelnetwork/esbuild-sass-modules-plugin)
+![license](https://img.shields.io/npm/l/@squirrelnetwork/esbuild-sass-modules-plugin)
 
 This plugin allows .scss and .sass files to be imported as modules in javascript
 files.
@@ -63,6 +64,36 @@ import style from 'file:source.scss';
 // contains the text path to be fetched
 fetch(style)
 	.then(css => console.log(css));
+```
+
+## PostCSS and its plugins
+
+Just set the `postcss.use` to `true` to enable PostCSS and set `postcss.plugins`
+to an array of plugins.
+
+### Autoprefixer example
+
+```js
+import esb from 'esbuild';
+import sassModules from '@squirrelnetwork/esbuild-sass-modules-plugin';
+import autoprefixer from 'autoprefixer';
+
+await esb.build(
+	{ bundle: true
+	, sourceRoot: 'src/'
+	, entryPoints: [ 'src/index.js' ]
+	, outfile: 'build/app.js'
+	, plugins:
+		[ sassModules(
+			{ postcss:
+				{ use: true
+				, plugins: [ autoprefixer ]
+				}
+			}
+		)
+		]
+	}
+);
 ```
 
 ## Documentation
