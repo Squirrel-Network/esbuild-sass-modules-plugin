@@ -44,7 +44,8 @@ export default class ESBuildSASSModulesPlugin {
 
 		switch(resolver) {
 		case ImportResolver.BUNDLE: {
-			const resolved = await esbconfig.resolve(path, { resolveDir });
+			const resolved =
+				await esbconfig.resolve(path, { resolveDir, kind });
 
 			if(!resolved.path) {
 				return { errors: resolved.errors, warnings: resolved.warnings };
@@ -59,7 +60,7 @@ export default class ESBuildSASSModulesPlugin {
 			const actualPath = path.substring('inline:'.length);
 
 			const resolved =
-				await esbconfig.resolve(actualPath, { resolveDir });
+				await esbconfig.resolve(actualPath, { resolveDir, kind });
 
 			if(!resolved.path) {
 				return { errors: resolved.errors, warnings: resolved.warnings };
@@ -74,7 +75,7 @@ export default class ESBuildSASSModulesPlugin {
 			const actualPath = path.substring('file:'.length);
 
 			const resolved =
-				await esbconfig.resolve(actualPath, { resolveDir });
+				await esbconfig.resolve(actualPath, { resolveDir, kind });
 
 			if(!resolved.path) {
 				return { errors: resolved.errors, warnings: resolved.warnings };
