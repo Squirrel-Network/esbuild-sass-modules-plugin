@@ -1,6 +1,6 @@
 {
   "name": "@squirrelnetwork/esbuild-sass-modules-plugin",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A sass module loader plugin for esbuild.",
   "main": "src/index.js",
   "type": "module",
