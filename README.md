@@ -7,6 +7,8 @@ A sass module loader plugin for esbuild.
 This plugin allows .scss and .sass files to be imported as modules in javascript
 files.
 
+> Warning: this module does not work with SASS 1.63.0 because of https://github.com/sass/dart-sass/issues/1995
+
 > Note: this package is a module.
 
 ## Install
