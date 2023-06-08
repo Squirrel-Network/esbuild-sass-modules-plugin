@@ -898,7 +898,6 @@ __metadata:
     postcss: ^8.4.14
     sass: 1.62.1
   peerDependencies:
-    lodash: ^4.17.21
     postcss: ^8.4.14
     sass: ">= 1.51.0 < 1.63.0"
   languageName: unknown
