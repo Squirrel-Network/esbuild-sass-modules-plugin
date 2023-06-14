@@ -1,4 +1,4 @@
-import sass from 'sass';
+import * as sass from 'sass';
 import postcss from 'postcss';
 import _ from 'lodash';
 
